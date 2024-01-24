@@ -7,6 +7,7 @@ def A(y):
     total = 0
     for i in range(int(y/2) + 1):
         total += i
+        print("total A: ", total)
     return total
 
 def B(y):
@@ -14,6 +15,7 @@ def B(y):
     total = 0
     for i in range(int(math.floor(y/2)+1), y+1):
         total += i
+        print("total B: ", total)
     return total
 
 def main(n = None):

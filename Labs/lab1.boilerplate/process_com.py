@@ -46,6 +46,7 @@ def main(n = None):
         Total += A(x)
         result = os.wait()
         print("result: ", result)
+        print("result after right shift: ", (result[1] >> 8))
         Total+=result[1] >> 8
         print("Total after A: ", Total)
     else:  # Child process
@@ -58,5 +59,5 @@ def main(n = None):
         print(f"The total is: {Total}")
 
 if __name__ == "__main__":
-    n = 1
+    n = 1000
     main(n)

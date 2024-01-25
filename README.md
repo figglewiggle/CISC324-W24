@@ -1,7 +1,9 @@
 1. Why is the total being returned by the program incorrect (e.g n=1, total=0, n=3, total=3 (when it should be 15))?
 Well, A(y) and B(y) are computing their respective values correctly (as we checked in the print statements), so that means there is a data synchronization issue between the parent and the child process. Specifically, the parent process is only being updated with A(y), and is not piping in the data from the child process's B(y) output. 
 
-2.
+2. How we fixed the issue: we sent the Total from the child process as an exit status to the parent process, which is stored as a 16-bit integer, where the top half includes the bits for the number 12 but it's shifted 8 bits to the left. This means that in order to get back to the standard 8-bit integer that Python has for the Total from b, you need capture the result by calling os.wait() in the parent function and then adding the exit status from the tuple shifted 8 to the right into the parent Total.
+
+
 
 
 Fixing the Issue:

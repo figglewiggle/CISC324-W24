@@ -6,12 +6,5 @@ Well, A(y) and B(y) are computing their respective values correctly (as we check
 3. What is the "n" that makes the Total incorrect? 
 We found that "n" to be 26, since when we put in 26, the total for B ended up being 260, and when it is shifted to the left by 8 to be put into the 16 bit exit status, the value becomes greater than 2^16, so the value stored in the exit status is truncated. Then, when it is converted back to an 8-bit integer format (4 byte), the truncated number is what is converted, and not the correct one.
 
-
-Fixing the Issue:
-The issue was fixed by implementing inter-process communication (IPC) using a pipe. This allowed the child process to send its calculated sum back to the parent process. Additionally, os.wait() was used in the parent process to wait for the child process to complete before calculating the final total. This ensured that the sums calculated by both processes were correctly combined.
-
-Limitation at Certain Value of n:
-After fixing the issue, you may still find incorrect sums starting from a certain value of n. This limitation is likely due to the buffer size of the pipe used for IPC. When the sum calculated by the child process becomes too large to fit into the buffer, it cannot be correctly transmitted to the parent, leading to incorrect total sums.
-
-Switching Functions of Parent and Child:
-If you switch the functions of the parent and child processes, the value of n at which the sum becomes incorrect might change. This change depends on how the workload is distributed between the two processes and the capacity of the IPC mechanism. The new threshold value would depend on the specific implementation details and system constraints.
+4. What is the "n" that makes Total incorrect after switching A and B?
+The "n" that makes this happen is 46, since A is done in the child process, so when the total return by A is above 2^8, when it is shifted to the left to fit into the 16-bit exit status, the value goes above 2^16, same as the previous question. The only difference in this one is the limit for "n" has increased since B is no longer being passed through the exit status and A is instead which grows slower than B. 

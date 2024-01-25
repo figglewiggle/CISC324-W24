@@ -46,7 +46,6 @@ def main(n = None):
         Total += A(x)
         result = os.wait()
         print("result: ", result)
-        print("result after right shift: ", (result[1] >> 8))
         Total+=result[1] >> 8
         print("result after right shift: ", result[1] >> 8)
         print("Total after A: ", Total)
@@ -60,9 +59,5 @@ def main(n = None):
         print(f"The total is: {Total}")
 
 if __name__ == "__main__":
-<<<<<<< Updated upstream
-    n = 26
-=======
-    n = 100
->>>>>>> Stashed changes
+    n = 45
     main(n)

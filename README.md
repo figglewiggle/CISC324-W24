@@ -1,6 +1,8 @@
-Incorrect Computations in Original Code:
-The original program returned incorrect computations because it did not properly aggregate the results from both the parent and child processes. For example, when 
-n=1, the program returned 0 because the child process's result was not added to the parent's result. The Total variable in the parent process didn't include the sum calculated by the child process.
+1. Why is the total being returned by the program incorrect (e.g n=1, total=0, n=3, total=3 (when it should be 15))?
+Well, A(y) and B(y) are computing their respective values correctly (as we checked in the print statements), so that means there is a data synchronization issue between the parent and the child process. Specifically, the parent process is only being updated with A(y), and is not piping in the data from the child process's B(y) output. 
+
+2.
+
 
 Fixing the Issue:
 The issue was fixed by implementing inter-process communication (IPC) using a pipe. This allowed the child process to send its calculated sum back to the parent process. Additionally, os.wait() was used in the parent process to wait for the child process to complete before calculating the final total. This ensured that the sums calculated by both processes were correctly combined.

@@ -3,19 +3,19 @@ import sys
 import math
 
 def A(y):
-    """Computes and returns the sum of 0 + 1 + 2 + 3 + ... + k + ... + [y/2]"""
-    total = 0
-    for i in range(int(y/2) + 1):
-        total += i
-        print("total A: ", total)
-    return total
-
-def B(y):
     """Computes the sum of [(y/2)+1] + [((y+1)/2)+1] + [((y+2)/2)+1] + ... [((y+k)/2)+1] + ... + y"""
     total = 0
     for i in range(int(math.floor(y/2)+1), y+1):
         total += i
         print("total B: ", total)
+    return total
+
+def B(y):
+    """Computes and returns the sum of 0 + 1 + 2 + 3 + ... + k + ... + [y/2]"""
+    total = 0
+    for i in range(int(y/2) + 1):
+        total += i
+        print("total A: ", total)
     return total
 
 def main(n = None):
@@ -48,6 +48,7 @@ def main(n = None):
         print("result: ", result)
         print("result after right shift: ", (result[1] >> 8))
         Total+=result[1] >> 8
+        print("result after right shift: ", result[1] >> 8)
         print("Total after A: ", Total)
     else:  # Child process
         Total += B(x)
@@ -59,5 +60,9 @@ def main(n = None):
         print(f"The total is: {Total}")
 
 if __name__ == "__main__":
+<<<<<<< Updated upstream
     n = 26
+=======
+    n = 100
+>>>>>>> Stashed changes
     main(n)

@@ -51,7 +51,7 @@ def main(n = None):
     else:  # Child process
         Total += B(x)
         print("Total after B: ", Total)
-        os._exit(0)  # Ensure the child process terminates here
+        os._exit(Total)  # Ensure the child process terminates here
 
     # If this is the parent process, print the total summation
     if pid != 0:

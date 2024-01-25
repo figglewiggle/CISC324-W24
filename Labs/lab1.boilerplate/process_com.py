@@ -59,5 +59,5 @@ def main(n = None):
         print(f"The total is: {Total}")
 
 if __name__ == "__main__":
-    n = 1000
+    n = 26
     main(n)

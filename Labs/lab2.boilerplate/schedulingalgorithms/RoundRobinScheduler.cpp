@@ -1,52 +1,53 @@
 #include "RoundRobinScheduler.h"
 #include <iostream>
-#include <queue>
-#include <map>
-#include <algorithm> // For std::min and std::max
+#include <map> // Include necessary header for std::map
+#include <algorithm> // Include necessary header for std::min
+
+RoundRobinScheduler::RoundRobinScheduler(std::queue<Process> proc, int quantum)
+    : timeQuantum(quantum), averageWaitTime(0.0f), averageTurnAroundTime(0.0f), initialProcessCount(proc.size()) {
+    // Initialize the processes queue
+    processes = proc;
+}
 
 void RoundRobinScheduler::schedule() {
     int currentTime = 0, totalWaitTime = 0, totalTurnAroundTime = 0;
-    std::queue<Process> readyQueue = this->processes; // Copy of the processes queue
-    std::map<int, int> remainingBurstTime;
+    std::map<int, int> remainingBurstTime; // Declare remainingBurstTime here
 
-    // No direct range-based for loop over std::queue, so we initialize remainingBurstTime differently
-    std::queue<Process> tempQueue = readyQueue; // Temporary queue for iteration
-    while (!tempQueue.empty()) {
-        const Process& process = tempQueue.front();
-        remainingBurstTime[process.id] = process.burstTime; // Direct access to Process fields
-        tempQueue.pop();
+    // Initialize remainingBurstTime map
+    while (!processes.empty()) {
+        const Process& process = processes.front();
+        remainingBurstTime[process.id] = process.burstTime;
+        processes.pop();
     }
 
     // Main scheduling loop
-    while (!readyQueue.empty()) {
-        Process process = readyQueue.front();
-        readyQueue.pop();
+    while (!remainingBurstTime.empty()) {
+        for (auto it = remainingBurstTime.begin(); it != remainingBurstTime.end();) {
+            int executionTime = std::min(timeQuantum, it->second);
+            currentTime += executionTime;
+            it->second -= executionTime;
 
-        // Assume each process must at least be executed for a 'timeQuantum' or until completion
-        int executionTime = std::min(this->timeQuantum, remainingBurstTime[process.id]);
-        remainingBurstTime[process.id] -= executionTime;
-        currentTime += executionTime;
-
-        if (remainingBurstTime[process.id] > 0) {
-            readyQueue.push(process); // Process not completed, re-queue
-        } else {
-            // Process completed, calculate its total time and wait time
-            totalTurnAroundTime += currentTime - process.arrivalTime;
+            if (it->second <= 0) {
+                totalTurnAroundTime += currentTime; // Update totalTurnAroundTime
+                it = remainingBurstTime.erase(it); // Process completed, remove from map
+            } else {
+                ++it; // Move to the next process
+            }
         }
-
-        // Wait time for each process is current time minus its arrival time and total burst time up to now
-        totalWaitTime += currentTime - process.arrivalTime - (process.burstTime - remainingBurstTime[process.id]);
     }
 
+    // Calculate totalWaitTime
+    totalWaitTime = totalTurnAroundTime - initialProcessCount;
+
     // Calculate averages based on the initial count of processes
-    this->averageWaitTime = static_cast<float>(totalWaitTime) / this->initialProcessCount;
-    this->averageTurnAroundTime = static_cast<float>(totalTurnAroundTime) / this->initialProcessCount;
+    averageWaitTime = static_cast<float>(totalWaitTime) / initialProcessCount;
+    averageTurnAroundTime = static_cast<float>(totalTurnAroundTime) / initialProcessCount;
 }
 
 void RoundRobinScheduler::calculateAverageWaitTime() {
-    std::cout << "Average Wait Time: " << this->averageWaitTime << std::endl;
+    std::cout << "Average Wait Time: " << averageWaitTime << std::endl;
 }
 
 void RoundRobinScheduler::calculateAverageTurnAroundTime() {
-    std::cout << "Average Turnaround Time: " << this->averageTurnAroundTime << std::endl;
+    std::cout << "Average Turnaround Time: " << averageTurnAroundTime << std::endl;
 }

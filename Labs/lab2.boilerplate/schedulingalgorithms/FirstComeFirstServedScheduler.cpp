@@ -1,17 +1,16 @@
 #include "FirstComeFirstServedScheduler.h"
 #include <iostream>
-#include <queue>
-#include <algorithm> // For std::max
 
-void FirstComeFirstServedScheduler::schedule() {
+// Constructor
+FirstComeFirstServedScheduler::FirstComeFirstServedScheduler(queue<Process> processes, int quantum) {
     int currentTime = 0;
     int totalWaitTime = 0;
     int totalTurnAroundTime = 0;
-    std::queue<Process> tempQueue = processes; // Copy of the original queue
+    queue<Process> tempQueue = processes; // Copy of the original queue
 
     while (!tempQueue.empty()) {
         Process& process = tempQueue.front();
-        process.waitTime = std::max(0, currentTime - process.arrivalTime);
+        process.waitTime = max(0, currentTime - process.arrivalTime);
         totalWaitTime += process.waitTime;
 
         // Calculate turnaround time for each process
@@ -23,14 +22,21 @@ void FirstComeFirstServedScheduler::schedule() {
         tempQueue.pop(); // Move to the next element
     }
 
-    averageWaitTime = static_cast<float>(totalWaitTime) / processes.size(); // You may need to adjust this logic
-    averageTurnAroundTime = static_cast<float>(totalTurnAroundTime) / processes.size(); // Adjust as per actual implementation
+    averageWaitTime = static_cast<float>(totalWaitTime) / processes.size();
+    averageTurnAroundTime = static_cast<float>(totalTurnAroundTime) / processes.size();
 }
 
+// Override schedule function
+void FirstComeFirstServedScheduler::schedule() {
+    // Implement scheduling logic here
+}
+
+// Override calculateAverageWaitTime function
 void FirstComeFirstServedScheduler::calculateAverageWaitTime() {
-    std::cout << "Average Wait Time: " << averageWaitTime << std::endl;
+    cout << "Average Wait Time: " << averageWaitTime << endl;
 }
 
+// Override calculateAverageTurnAroundTime function
 void FirstComeFirstServedScheduler::calculateAverageTurnAroundTime() {
-    std::cout << "Average Turnaround Time: " << averageTurnAroundTime << std::endl;
+    cout << "Average Turnaround Time: " << averageTurnAroundTime << endl;
 }

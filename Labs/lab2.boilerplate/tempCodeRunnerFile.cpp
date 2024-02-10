@@ -1,5 +1,6 @@
 #include <iostream>
 #include <queue>
+#include <ctime>
 #include <vector>
 #include "schedulingalgorithms/CPUScheduler.h"
 #include "schedulingalgorithms/FirstComeFirstServedScheduler.h"

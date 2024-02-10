@@ -1,6 +1,7 @@
 #include <iostream>
 #include <queue>
 #include <vector>
+#include <ctime>
 #include "schedulingalgorithms/CPUScheduler.h"
 #include "schedulingalgorithms/FirstComeFirstServedScheduler.h"
 #include "schedulingalgorithms/RoundRobinScheduler.h"
@@ -26,8 +27,11 @@ int main() {
     // Init processes for two test cases
     queue<Process> processes_tc1 = generateProcesses(5);
     queue<Process> processes_tc2 = generateProcesses(10);
+    int timeQuantum_tc1_2 = 2;
+    int timeQuantum_tc3_4 = 4;
 
     // Test Case #1: Using First-Come-First-Served Scheduler
+    cout << "###############################################\n";
     cout << "##### TEST CASE #1: First Come First Served Scheduler #####" << endl;
     scheduler = new FirstComeFirstServedScheduler(processes_tc1, 0);
     scheduler->schedule();
@@ -37,8 +41,8 @@ int main() {
     cout << "###############################################\n";
 
     // Test Case #1: Using Round Robin Scheduler
-    cout << "##### TEST CASE #1: Round Robin Scheduler #####" << endl;
-    scheduler = new RoundRobinScheduler(processes_tc1, 2); // Time quantum of 2
+    cout << "##### TEST CASE #1: Round Robin Scheduler + time quantum = 2 #####" << endl;
+    scheduler = new RoundRobinScheduler(processes_tc1, timeQuantum_tc1_2); // Time quantum of 2
     scheduler->schedule();
     scheduler->calculateAverageWaitTime();
     scheduler->calculateAverageTurnAroundTime();
@@ -55,8 +59,44 @@ int main() {
     cout << "###############################################\n";
 
     // Test Case #2: Using Round Robin Scheduler
-    cout << "##### TEST CASE #2: Round Robin Scheduler #####" << endl;
-    scheduler = new RoundRobinScheduler(processes_tc2, 2); // Time quantum of 2
+    cout << "##### TEST CASE #2: Round Robin Scheduler + time quantum = 2 #####" << endl;
+    scheduler = new RoundRobinScheduler(processes_tc2, timeQuantum_tc1_2); // Time quantum of 2
+    scheduler->schedule();
+    scheduler->calculateAverageWaitTime();
+    scheduler->calculateAverageTurnAroundTime();
+    delete scheduler; // Clean up
+    cout << "###############################################\n";
+
+    // Test Case #3: Using First-Come-First-Served Scheduler
+    cout << "##### TEST CASE #3: First Come First Served Scheduler #####" << endl;
+    scheduler = new FirstComeFirstServedScheduler(processes_tc1, 0);
+    scheduler->schedule();
+    scheduler->calculateAverageWaitTime();
+    scheduler->calculateAverageTurnAroundTime();
+    delete scheduler; // Clean up
+    cout << "###############################################\n";
+
+    // Test Case #3: Using Round Robin Scheduler
+    cout << "##### TEST CASE #3: Round Robin Scheduler + time quantum = 4 #####" << endl;
+    scheduler = new RoundRobinScheduler(processes_tc1, timeQuantum_tc3_4); // Time quantum of 2
+    scheduler->schedule();
+    scheduler->calculateAverageWaitTime();
+    scheduler->calculateAverageTurnAroundTime();
+    delete scheduler; // Clean up
+    cout << "###############################################\n";
+
+    // Test Case #4: Using First-Come-First-Served Scheduler
+    cout << "##### TEST CASE #4: First Come First Served Scheduler #####" << endl;
+    scheduler = new FirstComeFirstServedScheduler(processes_tc2, 0);
+    scheduler->schedule();
+    scheduler->calculateAverageWaitTime();
+    scheduler->calculateAverageTurnAroundTime();
+    delete scheduler; // Clean up
+    cout << "###############################################\n";
+
+    // Test Case #4: Using Round Robin Scheduler
+    cout << "##### TEST CASE #4: Round Robin Scheduler + time quantum = 4 #####" << endl;
+    scheduler = new RoundRobinScheduler(processes_tc2, timeQuantum_tc3_4); // Time quantum of 2
     scheduler->schedule();
     scheduler->calculateAverageWaitTime();
     scheduler->calculateAverageTurnAroundTime();

@@ -72,14 +72,6 @@ class SharedBuffer:
             return self.doneProducing and len(self.buffer) == 0
 
 
-# Simulation parameters
-# READ_TIME = 1
-# WRITE_TIME = 2
-# BUFFER_SIZE = 10
-# NUMBER_OF_READERS = 10
-# NUMBER_OF_WRITERS = 4
-# NUMBER_OF_MESSAGES = 5
-
 # Shared buffer
 buffer = SharedBuffer(10)
 

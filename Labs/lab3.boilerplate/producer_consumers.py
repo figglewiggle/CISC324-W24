@@ -1,133 +1,88 @@
 import threading
 import time
 
-'''
-This program simulates a producer-consumer problem using threads. The producer-consumer problem is a 
-classic synchronization problem where there are two types of threads: producers and consumers. Producers produce 
-data and put it into a shared buffer, while consumers consume data from the buffer. The problem is to make sure 
-that the producers and consumers do not interfere with each other and that the consumers do not consume data that has not been produced yet.
-'''
-
-
 class SharedBuffer:
     def __init__(self, size):
-        # Internal shared buffer
-        self.buffer = []
-        # Mutex to protect the buffer
-        self.mutex = threading.Lock()
-        # Semaphores to signal when the buffer is not empty
-        self.notEmpty = threading.Semaphore(0)
-        # Semaphores to signal when the buffer is not full
-        self.notFull = threading.Semaphore(size)
-        # Flag to signal that production is done
-        self.doneProducing = False
-
-    '''
-    Add a message to the buffer. If the buffer is full, the producer will wait.
-    '''
+        self.buffer = []  # The list acting as the shared buffer.
+        self.mutex = threading.Lock()  # Lock for mutual exclusion during buffer access.
+        self.notEmpty = threading.Semaphore(0)  # Semaphore to signal buffer is not empty.
+        self.notFull = threading.Semaphore(size)  # Semaphore to signal buffer is not full, initialized to buffer size.
+        self.doneProducing = False  # Flag to indicate when producers have finished producing.
 
     def add_message(self, message):
-        # TODO: wait if buffer is full
-
-        with self.mutex:
-            self.buffer.append(message)
-        # TODO: signal that buffer is not empty
-
-    '''
-    Read a message from the buffer. If the buffer is empty, the consumer will wait.
-    '''
+        self.notFull.acquire()  # Wait if buffer is full, ensuring no overflow.
+        with self.mutex:  # Access buffer exclusively to prevent data corruption.
+            self.buffer.append(message)  # Add message to the buffer.
+        self.notEmpty.release()  # Signal that buffer now has content, allowing consumers to proceed.
 
     def read_message(self):
-        message = None
-        # TODO: wait if buffer is empty
-
-        with self.mutex:
-            # TODO: if production is done and buffer is empty, return None (check the buffer length)
-            if len(self.buffer) == 0:
-                # TODO: release the requried semaphore to avoid deadlock
-
-                # Return None if production is done and buffer is empty
-                return None
-
-            message = self.buffer.pop(0)
-        # TODO: signal that buffer is not full
-
+        self.notEmpty.acquire()  # Wait if buffer is empty, ensuring no underflow.
+        with self.mutex:  # Access buffer exclusively to ensure data consistency.
+            if self.doneProducing and len(self.buffer) == 0:
+                self.notFull.release()  # Release to avoid deadlock if a producer is waiting.
+                return None  # Indicate no more messages will be produced.
+            message = self.buffer.pop(0)  # Retrieve and remove the first message in the buffer.
+        self.notFull.release()  # Signal space available in buffer, allowing producers to add more messages.
         return message
 
-    '''
-    Mark that production is done. This will be used by the producers to signal that they are done producing.
-    '''
-
     def mark_done_producing(self):
-        with self.mutex:
-            # TODO: set the flag to signal that production is done
+        with self.mutex:  # Exclusive access to update production status.
+            self.doneProducing = True
+            for _ in range(10):  # Release for each consumer to ensure they all can exit.
+                self.notEmpty.release()
 
-            # Release semaphore to ensure all consumers can exit
-            # TODO: release the semaphore for each consumer (you may need to release it multiple times)
-
-            pass  # Remove this line when you implement the method
-
-    def check_done_producing(self):
-        with self.mutex:
-            return self.doneProducing and len(self.buffer) == 0
-
-
-# Shared buffer
-buffer = SharedBuffer(10)
-
-'''
-Producer and consumer functions. Each producer produces multiple messages and each consumer consumes messages until production is done.
-'''
-
-
-def producer(thread_id):
-    # Each producer produces 5 messages
-    for message_number in range(5):
-        message = f"Message {message_number} from Producer {thread_id}"
+def producer(thread_id, buffer):
+    for message_number in range(5):  # Produce 5 messages per producer.
+        message = f"Producer {thread_id} has produced message number {message_number}."
         buffer.add_message(message)
-        print(f"Producer {thread_id} produced: {message}")
-        time.sleep(2)
-    # After the last producer finishes, signal that production is done. Note that 4 is the number of producers
-    if thread_id == 4 - 1:
+        print(f"[Producer {thread_id}] Produced message: {message_number}")
+        time.sleep(2)  # Simulate time taken to produce a message.
+
+    if thread_id == 3:  # If this is the last producer, indicate end of production.
+        print(f"[Producer {thread_id}] Finished producing. Notifying consumers.")
         buffer.mark_done_producing()
 
-
-'''
-Consumer function. Each consumer consumes messages until production is done and the buffer is empty.
-'''
-
-
-def consumer(thread_id):
+def consumer(thread_id, buffer):
     while True:
-        # TODO: consume a message from the buffer
         message = buffer.read_message()
-        if message is None:
-            # TODO: break the loop if production is done and buffer is empty
-            pass  # Remove this line when you implement the method
-        print(f"Consumer {thread_id} consumed: {message}")
-        time.sleep(1)  # Simulate reading time
-
+        if message is None:  # Check for signal indicating no more messages will be produced.
+            print(f"[Consumer {thread_id}] No more messages to consume. Exiting.")
+            break
+        print(f"[Consumer {thread_id}] Consumed message: {message}")
+        time.sleep(1)  # Simulate time taken to process a message.
 
 def main():
-    producers = [threading.Thread(target=producer, args=(i,))
-                 for i in range(4)]
-    consumers = [threading.Thread(target=consumer, args=(i,))
-                 for i in range(10)]
+    bufferSize = 10  # Define the size of the buffer.
+    numberOfProducers = 4  # Set the number of producers.
+    numberOfConsumers = 10  # Set the number of consumers.
+    buffer = SharedBuffer(bufferSize)  # Initialize the shared buffer.
 
+    # Initialize and start producer threads.
+    producers = [threading.Thread(target=producer, args=(i, buffer,)) for i in range(numberOfProducers)]
+    # Initialize and start consumer threads.
+    consumers = [threading.Thread(target=consumer, args=(i, buffer,)) for i in range(numberOfConsumers)]
+
+    # Starting producer threads.
     for p in producers:
         p.start()
-
+        print(f"Started Producer Thread: {p.name}")
+    
+    # Starting consumer threads.
     for c in consumers:
         c.start()
+        print(f"Started Consumer Thread: {c.name}")
 
+    # Wait for all producer threads to complete.
     for p in producers:
         p.join()
+        print(f"Producer Thread {p.name} has completed.")
 
+    # Wait for all consumer threads to complete.
     for c in consumers:
         c.join()
+        print(f"Consumer Thread {c.name} has completed.")
 
-    print("All producers and consumers have finished.")
-
+    print("All producers and consumers have successfully completed their tasks.")
 
 if __name__ == '__main__':
     main()

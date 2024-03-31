@@ -118,6 +118,8 @@ class WorkingSetPageReplacementAlgorithm:
         available_frame = self.try_allocate(new_page)
 
         if available_frame != -1:
+            self.tlb_cache.insert(virtual_page, available_frame)
+            self.page_table.map_page(virtual_page, available_frame)
             return available_frame
 
         # If there's no available frame, replace the pages outside the working set

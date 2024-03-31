@@ -114,7 +114,6 @@ class WorkingSetPageReplacementAlgorithm:
         if tlb_hit is not None:
             return tlb_hit
 
-        # TODO: Check if there's an available frame using a function implemented above (one line of code)
         available_frame = self.try_allocate(new_page)
 
         if available_frame != -1:

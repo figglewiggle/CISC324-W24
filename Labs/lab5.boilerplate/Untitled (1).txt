@@ -1,0 +1,11 @@
+Upon running the multiprogramming memory management simulation with the working set model, the output indicates a sequence of events where each new page loaded into memory for both Program 1 and Program 2 triggers a page fault. Specifically, for each program, 4 unique pages are loaded into frames 0 through 3, resulting in a total of 4 page faults per program, and an aggregate of 8 page faults across both programs.
+
+Reflection:
+
+1. Initially, the occurrence of page faults is anticipated as each page accessed by the programs is not present in memory and needs to be fetched. This behaviour aligns with the fundamental mechanics of paging systems, where a page fault is a normal event signalling the need to load a page into memory from a secondary storage medium.
+
+2. The output, while succinct, provides a preliminary look at how the implemented working set model operates under straightforward page access scenarios. The essence of the working set model is to minimize the frequency of page faults by intelligently selecting which pages to keep in memory based on recent access patterns. Although the model's efficiency in adapting to varying access patterns cannot be fully assessed through this simple output, it lays the groundwork for understanding the initial interactions between page accesses and memory management.
+
+3. Without a detailed sequence of varied page accesses or information on the working set's time window, it's challenging to critically evaluate the model's efficiency in reducing page faults over time. The working set model's core objective is to adapt to the program's memory access behaviour, aiming to keep frequently and recently accessed pages readily available in memory to avoid future faults.
+
+4. The total of 8 page faults reflects the scenario where each page must be loaded into memory, indicating initial accesses to these pages. The key to a successful working set model lies in its ability to manage these pages efficiently once they are in memory, especially in response to repeated accesses within the defined time window. This involves judiciously replacing pages that fall outside the active working set while retaining those that are actively used.
